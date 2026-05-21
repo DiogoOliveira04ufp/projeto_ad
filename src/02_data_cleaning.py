@@ -1,4 +1,3 @@
-# 02_data_cleaning.py
 import pandas as pd
 import numpy as np
 
@@ -48,6 +47,13 @@ df_wec = df_wec[df_wec["class"] != "INNOVATIVE CAR"]
 # ============================================================
 # MERGE COM WEATHER
 # ============================================================
+
+df_wec = df_wec[df_wec["season"].isin(["2021", "2022", 2021, 2022])]
+
+df_wec["season"] = df_wec["season"].astype(int)
+df_wec["round"] = df_wec["round"].astype(int)
+df_weather["season"] = df_weather["season"].astype(int)
+df_weather["round"] = df_weather["round"].astype(int)
 
 df_merged = pd.merge(df_wec, df_weather, on=["season", "round", "circuit"], how="left")
 
