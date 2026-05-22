@@ -30,8 +30,10 @@ print("\n--- Distribuição por temporada ---")
 print(df["season"].value_counts())
 
 # Correlações
+df["hour_numeric"] = pd.to_datetime(df["hour"], format="%H:%M:%S.%f").dt.hour + pd.to_datetime(df["hour"], format="%H:%M:%S.%f").dt.minute / 60
+
 print("\n--- Correlação entre variáveis numéricas ---")
-cols = ["lap_time_s", "top_speed", "kph", "s1", "s2", "s3", "temperature", "precipitation", "windspeed"]
+cols = ["lap_time_s", "top_speed", "kph", "hour_numeric", "temperature", "precipitation", "windspeed"]
 print(df[cols].corr().round(2))
 
 # Relação clima vs tempo de volta

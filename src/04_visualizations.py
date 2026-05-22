@@ -55,7 +55,7 @@ plt.savefig("plots/04_boxplot_chuva_seco.png")
 plt.close()
 
 # --- Gráfico 5: Heatmap de correlações ---
-cols = ["lap_time_s", "top_speed", "kph", "s1", "s2", "s3", "temperature", "precipitation", "windspeed"]
+cols = ["lap_time_s", "top_speed", "kph", "temperature", "precipitation", "windspeed"]
 fig, ax = plt.subplots(figsize=(9, 7))
 sns.heatmap(df[cols].corr().round(2), annot=True, fmt=".2f", cmap="coolwarm", linewidths=0.5, ax=ax)
 ax.set_title("Heatmap de Correlações", fontweight="bold")

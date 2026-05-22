@@ -57,6 +57,17 @@ df_weather["round"] = df_weather["round"].astype(int)
 
 df_merged = pd.merge(df_wec, df_weather, on=["season", "round", "circuit"], how="left")
 
+colunas_manter = [
+    # Identificação
+    "season", "round", "circuit", "class", "manufacturer", "team", "vehicle", "driver_name",
+
+    # Tempos
+    "lap_number", "lap_time_s", "top_speed", "kph", "hour",
+    # Meteorologia (do merge)
+    "temperature", "precipitation", "windspeed"
+]
+df_merged = df_merged[colunas_manter]
+
 print(f"Linhas após merge: {len(df_merged)}")
 print(f"Colunas após merge: {len(df_merged.columns)}")
 
