@@ -54,8 +54,9 @@ df_wec["season"] = df_wec["season"].astype(int)
 df_wec["round"] = df_wec["round"].astype(int)
 df_weather["season"] = df_weather["season"].astype(int)
 df_weather["round"] = df_weather["round"].astype(int)
+df_wec["hour_numeric"] = pd.to_datetime(df_wec["hour"], format="%H:%M:%S.%f").dt.hour
 
-df_merged = pd.merge(df_wec, df_weather, on=["season", "round", "circuit"], how="left")
+df_merged = pd.merge(df_wec, df_weather, on=["season", "round", "circuit", "hour_numeric"], how="left")
 
 colunas_manter = [
     # Identificação

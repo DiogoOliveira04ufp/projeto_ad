@@ -7,12 +7,11 @@ df = pd.read_csv("data/wec_clean.csv", low_memory=False)
 os.makedirs("plots", exist_ok=True)
 sns.set_theme(style="whitegrid")
 
-df["hour_numeric"] = pd.to_datetime(df["hour"], format="%H:%M:%S.%f").dt.hour + pd.to_datetime(df["hour"], format="%H:%M:%S.%f").dt.minute / 60
 df["chuva"] = df["precipitation"] > 0
 df["Condição"] = df["chuva"].map({True: "Chuva", False: "Seco"})
 
 # --- Gráfico 1: Heatmap de correlações globais ---
-cols = ["lap_time_s", "temperature", "precipitation", "windspeed", "hour_numeric"]
+cols = ["lap_time_s", "temperature", "precipitation", "windspeed"]
 fig, ax = plt.subplots(figsize=(8, 6))
 sns.heatmap(df[cols].corr().round(2), annot=True, fmt=".2f",
             cmap="coolwarm", linewidths=0.5, ax=ax)
@@ -69,21 +68,19 @@ plt.tight_layout()
 plt.savefig("plots/04_boxplot_seco_chuva_por_circuito.png")
 plt.close()
 
-# --- Gráfico 5: Evolução da temperatura ao longo das corridas ---
-fig, axes = plt.subplots(2, (n + 1) // 2, figsize=(16, 10))
-axes = axes.flatten()
-for i, circuito in enumerate(circuitos):
-    sub = df[df["circuit"] == circuito].sort_values("hour_numeric")
-    temp_hora = sub.groupby("hour_numeric")["temperature"].mean()
-    axes[i].plot(temp_hora.index, temp_hora.values, color="tomato", linewidth=1.5)
-    axes[i].set_title(circuito[:25], fontweight="bold", fontsize=9)
-    axes[i].set_xlabel("Hora da Corrida", fontsize=8)
-    axes[i].set_ylabel("Temperatura (°C)", fontsize=8)
-for j in range(i + 1, len(axes)):
-    axes[j].set_visible(False)
-plt.suptitle("Evolução da Temperatura ao Longo das Corridas", fontsize=13, fontweight="bold")
+# --- Gráfico 5: Temperatura média por circuito ---
+temp_media = df.groupby("circuit")["temperature"].mean().sort_values(ascending=False)
+fig, ax = plt.subplots(figsize=(12, 5))
+bars = ax.bar(temp_media.index, temp_media.values, color="tomato")
+ax.set_title("Temperatura Média por Circuito", fontweight="bold")
+ax.set_xlabel("Circuito")
+ax.set_ylabel("Temperatura Média (°C)")
+for bar, val in zip(bars, temp_media.values):
+    ax.text(bar.get_x() + bar.get_width() / 2, val + 0.3,
+            f"{val:.1f}°C", ha="center", fontsize=9)
+plt.xticks(rotation=20, ha="right")
 plt.tight_layout()
-plt.savefig("plots/05_temperatura_por_hora.png")
+plt.savefig("plots/05_temperatura_por_circuito.png")
 plt.close()
 
 print("✅ 5 gráficos guardados na pasta plots/")

@@ -53,6 +53,8 @@ for _, race in races.iterrows():
 
 df_weather = pd.concat(weather_list, ignore_index=True)
 
+df_weather["hour_numeric"] = pd.to_datetime(df_weather["time"]).dt.hour
+
 # Guardar para ser usado pelos outros ficheiros
 df_weather.to_csv("data/weather.csv", index=False)
 print(f"Dados meteorológicos guardados: {len(df_weather)} linhas")

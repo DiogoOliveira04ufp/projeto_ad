@@ -2,7 +2,6 @@ import pandas as pd
 
 df = pd.read_csv("data/wec_clean.csv", low_memory=False)
 
-df["hour_numeric"] = pd.to_datetime(df["hour"], format="%H:%M:%S.%f").dt.hour + pd.to_datetime(df["hour"], format="%H:%M:%S.%f").dt.minute / 60
 df["chuva"] = df["precipitation"] > 0
 
 print("=" * 60)
@@ -16,7 +15,7 @@ print(df[["lap_time_s", "temperature", "precipitation", "windspeed"]].describe()
 # ANÁLISE POR CIRCUITO
 # ============================================================
 
-cols = ["lap_time_s", "hour_numeric", "temperature", "precipitation", "windspeed"]
+cols = ["lap_time_s", "temperature", "precipitation", "windspeed"]
 
 for circuito, grupo in df.groupby("circuit"):
     print(f"\n{'=' * 40}")
