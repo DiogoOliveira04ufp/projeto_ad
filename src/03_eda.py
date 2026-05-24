@@ -2,44 +2,34 @@ import pandas as pd
 
 df = pd.read_csv("data/wec_clean.csv", low_memory=False)
 
+df["hour_numeric"] = pd.to_datetime(df["hour"], format="%H:%M:%S.%f").dt.hour + pd.to_datetime(df["hour"], format="%H:%M:%S.%f").dt.minute / 60
+df["chuva"] = df["precipitation"] > 0
+
 print("=" * 60)
 print("ANÁLISE EXPLORATÓRIA (EDA)")
 print("=" * 60)
 
-# Estatísticas gerais
 print("\n--- Estatísticas descritivas ---")
-print(df[["lap_time_s", "top_speed", "kph", "temperature", "precipitation"]].describe().round(2))
+print(df[["lap_time_s", "temperature", "precipitation", "windspeed"]].describe().round(2))
 
-# Por fabricante
-print("\n--- Tempo médio de volta por fabricante ---")
-print(df.groupby("manufacturer")["lap_time_s"].agg(["mean", "std", "min"]).round(2).sort_values("mean"))
+# ============================================================
+# ANÁLISE POR CIRCUITO
+# ============================================================
 
-# Por classe
-print("\n--- Tempo médio por classe ---")
-print(df.groupby("class")["lap_time_s"].agg(["mean", "std"]).round(2))
+cols = ["lap_time_s", "hour_numeric", "temperature", "precipitation", "windspeed"]
 
-# Por circuito
-print("\n--- Velocidade máxima por circuito ---")
-print(df.groupby("circuit")["top_speed"].agg(["mean", "max"]).round(2).sort_values("max", ascending=False))
+for circuito, grupo in df.groupby("circuit"):
+    print(f"\n{'=' * 40}")
+    print(f"CIRCUITO: {circuito}")
+    print(f"{'=' * 40}")
 
-# Distribuição de variáveis categóricas
-print("\n--- Distribuição por classe ---")
-print(df["class"].value_counts())
+    print(f"  Voltas totais: {len(grupo)}")
+    print(f"  Temperatura média: {grupo['temperature'].mean():.1f}°C")
+    print(f"  Voltas com chuva: {grupo['chuva'].sum()} ({grupo['chuva'].mean()*100:.1f}%)")
 
-print("\n--- Distribuição por temporada ---")
-print(df["season"].value_counts())
+    print("\n  Correlações com lap_time_s:")
+    print(grupo[cols].corr()["lap_time_s"].drop("lap_time_s").round(3).to_string())
 
-# Correlações
-df["hour_numeric"] = pd.to_datetime(df["hour"], format="%H:%M:%S.%f").dt.hour + pd.to_datetime(df["hour"], format="%H:%M:%S.%f").dt.minute / 60
-
-print("\n--- Correlação entre variáveis numéricas ---")
-cols = ["lap_time_s", "top_speed", "kph", "hour_numeric", "temperature", "precipitation", "windspeed"]
-print(df[cols].corr().round(2))
-
-# Relação clima vs tempo de volta
-print("\n--- Impacto da precipitação nos tempos ---")
-df["chuva"] = df["precipitation"] > 0
-print(df.groupby("chuva")["lap_time_s"].agg(["mean", "std", "count"]).round(2))
-
-print("\n--- Correlação temperatura vs lap_time_s por circuito ---")
-print(df.groupby("circuit")[["temperature", "lap_time_s"]].corr().unstack()["lap_time_s"]["temperature"].round(3))
+    if grupo["chuva"].any():
+        print("\n  Seco vs Chuva:")
+        print(grupo.groupby("chuva")["lap_time_s"].agg(["mean", "count"]).round(2))
