@@ -48,7 +48,7 @@ df_wec = df_wec[df_wec["class"] != "INNOVATIVE CAR"]
 # MERGE COM WEATHER
 # ============================================================
 
-df_wec = df_wec[df_wec["season"].isin(["2021", "2022", 2021, 2022])]
+df_wec = df_wec[df_wec["season"].isin(["2017", "2021", "2022", 2017, 2021, 2022])]
 
 df_wec["season"] = df_wec["season"].astype(int)
 df_wec["round"] = df_wec["round"].astype(int)
